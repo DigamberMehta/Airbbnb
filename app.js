@@ -11,6 +11,7 @@ const ejsMate = require("ejs-mate");
 const ExpressError = require("./utils/expressError.js");
 
 const session = require("express-session");
+const MongoStore = require("connect-mongo");
 const flash = require("connect-flash");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
@@ -26,14 +27,30 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
 app.engine("ejs", ejsMate);
+
+const dbUrl = process.env.ATLASDB_URL;
+console.log(dbUrl);
 main()
   .then(() => console.log("Connected to MongoDB"))
   .catch((err) => console.log(err));
 async function main() {
-  await mongoose.connect("mongodb://127.0.0.1:27017/wanderlust");
+  await mongoose.connect(dbUrl);
 }
 
+const store = MongoStore.create({
+  mongoUrl: dbUrl,
+  crypto: {
+    secret : "mysuperseceretcode"
+  },
+  touchAfter: 24 * 3600
+});
+
+store.on("error", function(e) {
+  console.log("Session Store Error", e);
+});
+
 const sessionOptions = {
+  store,
   secret: "mysupersecertcode",
   resave: false,
   saveUninitialized: true,
@@ -43,6 +60,9 @@ const sessionOptions = {
     maxAge: 1000 * 60 * 60 * 24 * 7
   }
 }
+
+
+
 app.get("/", (req, res) => {
   res.send("ROOT");
 });
@@ -98,6 +118,6 @@ app.use((err, req, res, next) => {
   // res.status(statusCode).send(message);
 });
 
-app.listen(3000, () => {
+app.listen(8080, () => {
   console.log("Server is running on port 3000");
 });
