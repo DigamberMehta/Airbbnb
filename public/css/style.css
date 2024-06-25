@@ -93,3 +93,6 @@ body {
  height: 400px;
  width: 80vh;
 }
+#content-container {
+  transition: margin-top 0.3s ease; /* Adjust duration and easing as needed */
+}

@@ -18,4 +18,19 @@
       })
   })()
 
+  document.addEventListener('DOMContentLoaded', function() {
+    var navbarToggler = document.querySelector('.navbar-toggler-icon');
+    var contentContainer = document.getElementById('content-container');
+
+    navbarToggler.addEventListener('click', function() {
+        if (contentContainer.style.marginTop !== '200px') {
+            contentContainer.style.marginTop = '200px'; // Move content down
+        } else {
+            contentContainer.style.marginTop = '0'; // Move content back up
+        }
+    });
+});
+
+
+
 console.log("Hello from script.js!");
